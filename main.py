@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , HTTPException
 from contextlib import asynccontextmanager
 import aiosqlite
 
@@ -52,7 +52,10 @@ async def get_task(task_id:int):
         db.row_factory = aiosqlite.Row
         cursor = await db.execute("SELECT * FROM tasks WHERE id = ?",(task_id,))
         row = await cursor.fetchone()
-        return {"message":f"task: {row[1]}"}
+        if row:
+            return {"message":f"task: {row[1]}"}
+        raise HTTPException(status_code=404,detail="task not found")
+        
 
 @app.delete("/delte_task")
 async def delete_task(task_id:int):
@@ -60,8 +63,3 @@ async def delete_task(task_id:int):
         await db.execute("DELETE FROM tasks WHERE id = ?",(task_id,))
         await db.commit()
         return {"message":"task deleted succefully"} 
-    
-
-# < ------------- NEXT TIME CREATE MORE ENDPOINTS TO PRACTICE SQL QUERIES --------------- >
-# < ------------- NEXT TIME CREATE MORE ENDPOINTS TO PRACTICE SQL QUERIES --------------- >
-# < ------------- NEXT TIME CREATE MORE ENDPOINTS TO PRACTICE SQL QUERIES --------------- >
