@@ -46,6 +46,13 @@ async def update_task(task_id:int,update:str):
         return {"message":f" task updated succefully {update}"}
     return {"message":"something went wrong"}
     
+@app.post("get_task_by_id/{task_id}")
+async def get_task(task_id:int):
+    async with aiosqlite.connect(DATABASE_NAME) as db:
+        cursor = await db.execute("SELECT * FROM tasks WHERE id = ?",(task_id,))
+        row = await cursor.fetchall()
+        
+        return {"message":f"task: {row[1]}"}
 
 @app.delete("/delte_task")
 async def delete_task(task_id:int):
